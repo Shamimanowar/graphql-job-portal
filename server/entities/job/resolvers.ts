@@ -17,7 +17,36 @@ const resolvers: Resolvers = {
             return jobs
         }
     },
-    Mutation: {}
+    Mutation: {
+        createJob: async (root, args, context) => {
+            if(!context.auth.user?.isAdmin) {
+                throw new Error("Unauthorized!")
+            }
+            const {title, companyName, location, description, type, remote, salary} = args.input
+            const job = await context.prisma.job.create({
+                data: {
+                    title,
+                    location,
+                    description,
+                    type,
+                    remote,
+                    salary,
+                    company: {
+                        create: {
+                            name: companyName,
+                        }
+                    },
+                    owner: {
+                        connect: {
+                            id: context.auth.user.id
+                        }
+                    }
+                }
+            })
+
+            return job
+        },
+    }
 }
 
 export default resolvers
