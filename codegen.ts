@@ -7,7 +7,11 @@ const config: CodegenConfig = {
             plugins: [{ "typescript": {} }, { "typescript-resolvers": {} }],
             config: {
                 contextType: "../context#Context",
-                defaultMapper: "Partial<{T}>"
+                defaultMapper: "Partial<{T}>",
+                mappers: {
+                    Job: "@prisma/client#Job as PrismaJob",
+                    // JobType: "@prisma/client#JobType as PrismaJobType",
+                }
             }
         }
     }

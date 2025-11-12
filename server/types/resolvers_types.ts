@@ -1,4 +1,5 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import { Job as PrismaJob } from '@prisma/client';
 import { Context } from '../context';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -7,6 +8,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -115,7 +117,7 @@ export type MutationSignupArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  me: User;
+  me?: Maybe<User>;
   searchJobs: Array<Job>;
 };
 
@@ -230,7 +232,7 @@ export type ResolversTypes = {
   DeleteJobInput: ResolverTypeWrapper<Partial<DeleteJobInput>>;
   ID: ResolverTypeWrapper<Partial<Scalars['ID']['output']>>;
   Int: ResolverTypeWrapper<Partial<Scalars['Int']['output']>>;
-  Job: ResolverTypeWrapper<Partial<Job>>;
+  Job: ResolverTypeWrapper<PrismaJob>;
   JobType: ResolverTypeWrapper<Partial<JobType>>;
   LoginInput: ResolverTypeWrapper<Partial<LoginInput>>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -238,7 +240,7 @@ export type ResolversTypes = {
   SearchJobsInput: ResolverTypeWrapper<Partial<SearchJobsInput>>;
   SignupInput: ResolverTypeWrapper<Partial<SignupInput>>;
   String: ResolverTypeWrapper<Partial<Scalars['String']['output']>>;
-  User: ResolverTypeWrapper<Partial<User>>;
+  User: ResolverTypeWrapper<Partial<Omit<User, 'appliedJobs' | 'ownedJobs'> & { appliedJobs: Array<ResolversTypes['Job']>, ownedJobs: Array<ResolversTypes['Job']> }>>;
   UserRole: ResolverTypeWrapper<Partial<UserRole>>;
 };
 
@@ -253,14 +255,14 @@ export type ResolversParentTypes = {
   DeleteJobInput: Partial<DeleteJobInput>;
   ID: Partial<Scalars['ID']['output']>;
   Int: Partial<Scalars['Int']['output']>;
-  Job: Partial<Job>;
+  Job: PrismaJob;
   LoginInput: Partial<LoginInput>;
   Mutation: {};
   Query: {};
   SearchJobsInput: Partial<SearchJobsInput>;
   SignupInput: Partial<SignupInput>;
   String: Partial<Scalars['String']['output']>;
-  User: Partial<User>;
+  User: Partial<Omit<User, 'appliedJobs' | 'ownedJobs'> & { appliedJobs: Array<ResolversParentTypes['Job']>, ownedJobs: Array<ResolversParentTypes['Job']> }>;
 };
 
 export type CompanyResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Company'] = ResolversParentTypes['Company']> = {
@@ -299,7 +301,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
 };
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  me?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   searchJobs?: Resolver<Array<ResolversTypes['Job']>, ParentType, ContextType, RequireFields<QuerySearchJobsArgs, 'input'>>;
 };
 
