@@ -2,6 +2,31 @@ import { JobType, Resolvers } from "../../types/resolvers_types"
 
 
 const resolvers: Resolvers = {
+    Job: {
+        company: async (job, args, context) => {
+            const company = await context.prisma.company.findUnique({
+                where: {id: job.companyId},
+            });
+            if(!company){
+                throw new Error("Company not found")
+            }
+            return company
+        },
+        
+        isApplied: async (job, args, context) => {
+            if(!context.auth.user){
+                return false
+            }
+            const isApplied = await context.prisma.job.count({
+                where: {
+                    id: job.id,
+                    applicants: {some: {id: context.auth.user.id}},
+                }
+            });
+            return isApplied > 0;
+        }
+    },
+
     Query: {
         searchJobs: async (root, args, context) => {
             const {query} = args.input;
