@@ -72,19 +72,24 @@ const resolvers: Resolvers = {
                     }
                 }
             })
-
-            // here can I not make the update query from user table?
-            // await context.prisma.user.update({
-            //     where: {id: context.auth.user.id},
-            //     data: {
-            //         appliedJobs: {
-            //             connect: {
-            //                 id: jobId
-            //             }
-            //         }
-            //     }
-            // })
             
+            return true
+        },
+        cancelApplication: async (root, args, context) => {
+            if(!context.auth.user){
+                throw new Error("Unauthorized!")
+            }
+            const {id: jobId} = args.input
+            await context.prisma.job.update({
+                where: {id: jobId},
+                data: {
+                    applicants: {
+                        disconnect: {
+                            id: context.auth.user.id
+                        }
+                    }
+                }
+            })
             return true
         }
     }
