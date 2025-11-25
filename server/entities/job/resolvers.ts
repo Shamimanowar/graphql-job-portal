@@ -46,6 +46,47 @@ const resolvers: Resolvers = {
 
             return job
         },
+        deleteJob: async (root, args, context) => {
+            if(!context.auth.user?.isAdmin){
+                throw new Error("Unauthorized!")
+            }
+            
+            await context.prisma.job.delete({
+                where: {id: args.input.id, ownerId: context.auth.user.id},
+            })
+            return true
+            
+        },
+        applyForJob: async (root, args, context) => {
+            if(!context.auth.user){
+                throw new Error("Unauthorized!")
+            }
+            const {id: jobId} = args.input
+            await context.prisma.job.update({
+                where: {id: jobId},
+                data: {
+                    applicants: {
+                        connect: {
+                            id: context.auth.user.id
+                        }
+                    }
+                }
+            })
+
+            // here can I not make the update query from user table?
+            // await context.prisma.user.update({
+            //     where: {id: context.auth.user.id},
+            //     data: {
+            //         appliedJobs: {
+            //             connect: {
+            //                 id: jobId
+            //             }
+            //         }
+            //     }
+            // })
+            
+            return true
+        }
     }
 }
 
