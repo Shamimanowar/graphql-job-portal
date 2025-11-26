@@ -1,0 +1,16 @@
+query SearchJobs($input: SearchJobsInput!){
+    searchJobs(input: $input){
+        id,
+        title,
+        location,
+        type,
+        remote,
+        salary,
+        company {
+            id,
+            name,
+        },
+        createdAt,
+        isApplied,
+    }
+}

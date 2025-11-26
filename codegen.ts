@@ -2,6 +2,7 @@ import { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
     schema: "./server/**/*.graphql",
+    documents: ["src/**/*.graphql", ],
     generates: {
         "./server/types/resolvers_types.ts": {
             plugins: [{ "typescript": {} }, { "typescript-resolvers": {} }],
@@ -14,6 +15,28 @@ const config: CodegenConfig = {
                 mappers: {
                     Job: "@prisma/client#Job as PrismaJob",
                     // JobType: "@prisma/client#JobType as PrismaJobType",
+                }
+            }
+        },
+        "src/types/graphql.ts": {
+            plugins: ["typescript"],
+            config: {
+                namingConvention: {
+                    enumValues: "change-case#upperCase"
+                }
+            }
+        },
+        "src/": {
+            preset: "near-operation-file",
+            presetConfig: {
+                extension: ".generated.tsx",
+                baseTypesPath: "types/graphql.ts",
+            },
+            plugins: ["typescript-operations", "typescript-react-apollo"],
+            config: {
+                withHooks: true,
+                scalars: {
+                    DateTime: "Date",
                 }
             }
         }
